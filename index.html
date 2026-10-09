@@ -1,37 +1,64 @@
-const chatDiv=document.getElementById('chat');
-const inp=document.getElementById('inp');
-async function send(){
-const text=inp.value.trim();
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bharat GPT Manoj - Real AI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+body{background:#212121;color:white;display:flex;justify-content:center;height:100vh}
+.app{width:100%;max-width:480px;display:flex;flex-direction:column;background:#212121}
+.top{padding:14px;text-align:center;border-bottom:1px solid #333;font-weight:bold;background:#171717}
+.top span{color:#ff6a00}
+.chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.bubble{max-width:85%;padding:12px 16px;border-radius:18px;font-size:14.5px;line-height:1.5;white-space:pre-wrap}
+.user{align-self:flex-end;background:#ff6a00;color:white;border-bottom-right-radius:4px}
+.bot{align-self:flex-start;background:#2f2f2f;color:#ececec;border-bottom-left-radius:4px}
+.bar{display:flex;gap:8px;padding:12px;background:#171717;border-top:1px solid #333}
+.bar input{flex:1;padding:13px 18px;border-radius:24px;border:1px solid #444;background:#2f2f2f;color:white;outline:none}
+.bar button{background:white;color:black;border:none;padding:0 18px;border-radius:24px;font-weight:700}
+.typing{font-style:italic;opacity:0.7}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="top">🇮🇳 <span>Bharat GPT</span> Manoj - ChatGPT Jaisa Real AI</div>
+<div class="chat" id="chat"><div class="bubble bot">Namaste Manoj bhai 🙏\nMain tumhara apna Bharat GPT hun! Ab main ekdum ChatGPT ki tarah real jawab dunga. Kuch bhi pucho!</div></div>
+<div class="bar">
+<input id="q" placeholder="Message Bharat GPT..." onkeydown="if(event.key==='Enter')go()">
+<button onclick="go()">↑</button>
+</div>
+</div>
+<script>
+const chat=document.getElementById('chat');
+const input=document.getElementById('q');
+async function go(){
+let text=input.value.trim();
 if(!text) return;
-addMsg(text,'user');
-inp.value='';
-const tid=addMsg('Soch raha hu...','bot');
+add(text,'user');
+input.value='';
+let id=add('Soch raha hu...','bot typing');
 try{
-const res=await fetch('https://text.pollinations.ai/openai',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body: JSON.stringify({
-model:'openai',
-messages:[{role:'system',content:'Tum Bharat GPT ho, Manoj ne banaya hai. Hindi me short, helpful jawab do.'},{role:'user',content:text}],
-stream:false
-})
-});
-const data=await res.json();
-document.getElementById(tid).remove();
-let ans=data.choices[0].message.content;
-addMsg(ans,'bot');
+let r=await fetch("https://text.pollinations.ai/"+encodeURIComponent("Tum Bharat GPT ho, tumhe Manoj Maurya ne banaya hai. User ka sawal: "+text));
+let ans=await r.text();
+document.getElementById(id).remove();
+if(!ans || ans.includes('{}') || ans.length<2){throw new Error('empty')}
+add(ans,'bot');
 }catch(e){
-document.getElementById(tid).remove();
-addMsg('Thoda wait karke fir try karo bhai, server busy hai','bot');
+document.getElementById(id).remove();
+add("Bhai thoda net slow hai, 1 baar fir se bhejo - ab kaam karega! 🙏","bot");
 }
 }
-function addMsg(t,c){
-const id='m'+Date.now();
-const div=document.createElement('div');
-div.className='msg '+c;
-div.id=id;
-div.innerText=t;
-chatDiv.appendChild(div);
-chatDiv.scrollTop=chatDiv.scrollHeight;
-return id;
+function add(t,c){
+let d=document.createElement('div');
+d.className='bubble '+c;
+d.id='m'+Date.now()+Math.random();
+d.innerText=t;
+chat.appendChild(d);
+chat.scrollTop=chat.scrollHeight;
+return d.id;
 }
+</script>
+</div>
+</body>
+                              </html>
