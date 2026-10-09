@@ -1,36 +1,3 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bharat GPT Manoj</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
-body{background:linear-gradient(135deg,#ff9933,#ffffff,#138808);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:10px}
-.container{width:100%;max-width:420px;height:90vh;background:white;border-radius:15px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
-.header{background:#ff6a00;color:white;padding:12px;text-align:center;font-weight:bold;font-size:18px}
-.header small{display:block;font-size:11px;font-weight:normal;opacity:0.9}
-.chat{flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:10px;background:#fafafa}
-.msg{max-width:80%;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.4;word-wrap:break-word}
-.user{align-self:flex-end;background:#ff6a00;color:white;border-bottom-right-radius:4px}
-.bot{align-self:flex-start;background:#e9e9eb;color:#000;border-bottom-left-radius:4px}
-.input-area{display:flex;padding:10px;border-top:1px solid #ddd;background:white;gap:8px}
-.input-area input{flex:1;padding:12px 15px;border:1px solid #ddd;border-radius:25px;outline:none;font-size:14px}
-.input-area button{background:#ff6a00;color:white;border:none;padding:0 20px;border-radius:25px;font-weight:bold;cursor:pointer}
-</style>
-</head>
-<body>
-<div class="container">
-<div class="header">🇮🇳 Bharat GPT Manoj <small>Real AI - ChatGPT Jaisa</small></div>
-<div class="chat" id="chat">
-<div class="msg bot">Namaste Manoj bhai! 🙏 Ab mai Real AI ban gaya hu! Kuch bhi pucho!</div>
-</div>
-<div class="input-area">
-<input id="inp" placeholder="Kuch bhi puchhiye..." onkeypress="if(event.key==='Enter')send()">
-<button onclick="send()">Bhejo</button>
-</div>
-</div>
-<script>
 const chatDiv=document.getElementById('chat');
 const inp=document.getElementById('inp');
 async function send(){
@@ -40,14 +7,22 @@ addMsg(text,'user');
 inp.value='';
 const tid=addMsg('Soch raha hu...','bot');
 try{
-const prompt=`Tum Bharat GPT ho, tumhe Manoj ne banaya hai. Hindi mix me helpful jawab do. Sawal: ${text}`;
-const res=await fetch('https://text.pollinations.ai/'+encodeURIComponent(prompt));
-let ans=await res.text();
+const res=await fetch('https://text.pollinations.ai/openai',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body: JSON.stringify({
+model:'openai',
+messages:[{role:'system',content:'Tum Bharat GPT ho, Manoj ne banaya hai. Hindi me short, helpful jawab do.'},{role:'user',content:text}],
+stream:false
+})
+});
+const data=await res.json();
 document.getElementById(tid).remove();
+let ans=data.choices[0].message.content;
 addMsg(ans,'bot');
 }catch(e){
 document.getElementById(tid).remove();
-addMsg('Network issue, fir se try karo','bot');
+addMsg('Thoda wait karke fir try karo bhai, server busy hai','bot');
 }
 }
 function addMsg(t,c){
@@ -60,6 +35,3 @@ chatDiv.appendChild(div);
 chatDiv.scrollTop=chatDiv.scrollHeight;
 return id;
 }
-</script>
-</body>
-</html>
